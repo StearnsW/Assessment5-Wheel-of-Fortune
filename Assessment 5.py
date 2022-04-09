@@ -1,4 +1,3 @@
-from http.client import CONFLICT
 import random
 rounds=3
 number_of_players=3
