@@ -1,0 +1,25 @@
+WH__L _F F_RTUN_ FLOWCHART LOGIC DETAILS
+TURN CHOICES:
+Make a menu similar to the Tourney exercise for the player options
+*reject invalid menu input
+return the user choice as an int
+SPIN WHEEL:
+have list of wheel choices, choose one at random, display result
+*if lose a turn increase player counter and get out of turn loop
+*if bankrupt, deduct from bank then like lose a turn
+*if neither, prompt consonant guess (incorrect ends turn, correct updates knowledge, adds cash, and returns to turn menu)
+GUESS WORD:
+allow player to make a guess which ends their turn
+*if the guess is correct, end the round and bank round money
+BUY A VOWEL:
+check if player has funds, if yes continue, if no return to turn menu
+continue:
+	deduct money
+	prompt vowel guess (incorrect ends turn, correct updates knowledge and returns to turn menu)
+
+NOTES:
+Every round is a loop of turns which are themselves loops, can only break round loop with correct word, can leave turn
+loop with any error (poor spin, incorrect guess of any type)
+Final round needs check for big winner, if two players tied, favor first
+
+
