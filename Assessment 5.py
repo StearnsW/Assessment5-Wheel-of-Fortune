@@ -1,4 +1,5 @@
 import random
+
 rounds=3
 number_of_players=3
 player_dictionary={}
@@ -10,6 +11,7 @@ wheel_values=['Lose a Turn','Bankrupt',100,
 900,450,550,500,350,400,450,
 550,600,650,250,150,750,850]
 
+###########################
 def Get_Word():
     words_file=open("words_alpha(word list from gitHub).txt") # open list file to read in data
     file_contents=words_file.read() # read in file data
@@ -18,7 +20,9 @@ def Get_Word():
     words_file.close() # close list file
     word=random.choice(list_of_words) # chose a random word from the list
     return word
+###########################
 
+###########################
 def Welcome():
     print("Welcome to the Wh__l _f F_rtun_")
     print(f"This game is set for {number_of_players} players to play {rounds} rounds, no exceptions.")
@@ -29,7 +33,7 @@ def Welcome():
         player_bank[player_input_name]=0
     for i in range(rounds):
         current_player=Play_Round(i+1,current_player)
-    
+###########################    
 
 ###########################
 def Get_Name(int1):
@@ -52,9 +56,9 @@ def Play_Round(int1,int2):
         current_player=0
     return current_player
     
-############################
+###########################
 
-
+###########################
 def Wheel_Round(int1,int2):
     for player in player_bank.keys():
         round_bank[player]=0
@@ -157,8 +161,9 @@ def Wheel_Round(int1,int2):
     for player in player_bank.keys():
         player_bank[player]+=round_bank[player]
     return current_player
+###########################
 
-
+###########################
 def Guess_Letter(str1,str2):
     if str1.find(str2)==-1: # check if letter not in word and not repeat guess
         print("That letter is not in the word")
@@ -166,8 +171,9 @@ def Guess_Letter(str1,str2):
     else: 
         correct_guess=True
     return correct_guess
+###########################
 
-
+###########################
 def Consonant_Guess():
     is_consonant=False
     while not is_consonant:
@@ -181,8 +187,9 @@ def Consonant_Guess():
         else:
             is_consonant=True
     return guess.upper()
+###########################
 
-
+###########################
 def Guess_Word(str1):
     user_guess=input("What word would you like to guess?\n")
     if user_guess.upper()!=str1: # check if word is incorrect and not a repeat
@@ -192,7 +199,9 @@ def Guess_Word(str1):
         print("You correctly guessed the word!  Congratulations!")
         correct_guess=True
     return correct_guess
-        
+###########################
+
+###########################        
 def Vowel_Guess():
     is_vowel=False
     while not is_vowel:
@@ -206,20 +215,26 @@ def Vowel_Guess():
         else:
             is_vowel=True
     return guess.upper()
+###########################
 
-
+###########################
 def Can_Buy_Vowel(int1):
     if round_bank[player_dictionary[int1]]>=250:
         sufficient_funds=True
     else:
         sufficient_funds=False
     return sufficient_funds
+###########################
 
-
+###########################
 def Final_Round(int1):
     guessed_letters=set()
     current_player=Money_Leader()
-    print(f"{player_dictionary[current_player]} has the most money entering the final round.")
+    if current_player==-1:
+        print('Since nobody has any money, the first player shall get to play the final round')
+        current_player=0
+    else:
+        print(f"{player_dictionary[current_player]} has the most money entering the final round.")
     print(f"It is {player_dictionary[current_player]}'s turn.")
     input("You will be given one guess at the word after learning some information, hit enter to continue:")
     word_checked=False # has the word chosen been checked, begins False as no word chosen for the game yet so can't have been checked
@@ -265,25 +280,29 @@ def Final_Round(int1):
         Big_Reward(current_player)
     print(f"Final Bank totals: {player_bank}")
     print("Thanks for playing, goodbye!")
-    
+###########################
 
+###########################
 def Big_Reward(int1):
     grand_prize=2500
     print(f"For correctly guessing the final word, you've won ${grand_prize}")
     player_bank[player_dictionary[int1]]+=grand_prize
+###########################
 
-
-
+###########################
 def Money_Leader():
-    max_money=0
+    max_money=1
+    most_money=-1
     for player_id in player_dictionary.keys():
         if player_bank[player_dictionary[player_id]]>max_money:
             most_money=player_id
             max_money=player_bank[player_dictionary[player_id]]
+        elif player_bank[player_dictionary[player_id]]==max_money:
+            print(f"{player_dictionary[player_id]} is tied for the money lead, sadly they don't get to go on.")
     return most_money  
-       
+###########################       
 
-##################################
+###########################
 def Turn_Menu():
     print("Turn Menu")
     print("====================")
@@ -299,7 +318,7 @@ def Turn_Menu():
         else:
             print("That is not a recognized option, please try again")
     return turn_choice
-##################################
+###########################
 
 
 
