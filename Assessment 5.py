@@ -214,6 +214,7 @@ def Final_Round():
     current_player=Money_Leader()
     print(f"{player_dictionary[current_player]} has the most money entering the final round.")
     print(f"It is {player_dictionary[current_player]}'s turn.")
+    input("You will be given one guess at the word after learning some information, hit enter to continue:")
     word_checked=False # has the word chosen been checked, begins False as no word chosen for the game yet so can't have been checked
     while not word_checked: # loop to check if is new word or not
         test_word=Get_Word() # get a word
@@ -222,11 +223,12 @@ def Final_Round():
             round_word=test_word # set round_word (the word to play) to the picked test_word
             words_played.add(round_word) # add the new word to play to the played words set
     word_knowledge=list("_"*len(round_word)) # what the player knows about the word
-    print(round_word)
     for i in range(len(word_knowledge)): # loop through the blank locations to see which need replacing
         if round_word[i] in {'R','S','T','L','N','E'}: # replace values where appropriate
             word_knowledge[i]=round_word[i]
     print(word_knowledge)
+    print("The letters R,S,T,L,N,E have already been filled in.")
+    print("Please guess 3 more consonants and one additional vowel.")
     for i in range(3):
         new_information=False
         while not new_information:
