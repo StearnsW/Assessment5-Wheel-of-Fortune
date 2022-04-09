@@ -2,14 +2,10 @@ from http.client import CONFLICT
 import random
 rounds=3
 number_of_players=3
-current_round=1
-current_player=0
 player_dictionary={}
 player_bank={}
 round_bank={}
-words_played=set()
-guessed_letters=set()
-word_knowledge=set()
+words_played={}
 wheel_values=['Lose a Turn','Bankrupt',100,
 200,300,400,500,600,700,800,
 900,450,550,500,350,400,450,
@@ -51,28 +47,29 @@ def Get_Name(int1):
 ###########################
 def Play_Round(int1,int2):
     if int1<rounds:
-        current_player=Wheel_Round(int2)
+        current_player=Wheel_Round(int1,int2)
     else:
-        Final_Round()
+        Final_Round(int1)
         current_player=0
     return current_player
     
 ############################
 
 
-def Wheel_Round(int1):
+def Wheel_Round(int1,int2):
     for player in player_bank.keys():
         round_bank[player]=0
     word_checked=False # has the word chosen been checked, begins False as no word chosen for the game yet so can't have been checked
     while not word_checked: # loop to check if is new word or not
         test_word=Get_Word() # get a word
-        if test_word not in words_played: # test if word is new
+        if test_word not in words_played.values(): # test if word is new
             word_checked=True # word is new so no need to recheck, change checked to True
             round_word=test_word # set round_word (the word to play) to the picked test_word
-            words_played.add(round_word) # add the new word to play to the played words set
+            words_played[int1]=round_word # add the new word to play to the played words set
     word_knowledge=list("_"*len(round_word)) # what the player knows about the word
+    print(words_played)
     round_over = False
-    current_player=int1
+    current_player=int2
     print(player_bank)
     guessed_letters=set()
     while not round_over:
@@ -209,7 +206,7 @@ def Can_Buy_Vowel(int1):
     return sufficient_funds
 
 
-def Final_Round():
+def Final_Round(int1):
     guessed_letters=set()
     current_player=Money_Leader()
     print(f"{player_dictionary[current_player]} has the most money entering the final round.")
@@ -221,7 +218,7 @@ def Final_Round():
         if test_word not in words_played: # test if word is new
             word_checked=True # word is new so no need to recheck, change checked to True
             round_word=test_word # set round_word (the word to play) to the picked test_word
-            words_played.add(round_word) # add the new word to play to the played words set
+            words_played[int1]=round_word # add the new word to play to the played words set
     word_knowledge=list("_"*len(round_word)) # what the player knows about the word
     for i in range(len(word_knowledge)): # loop through the blank locations to see which need replacing
         if round_word[i] in {'R','S','T','L','N','E'}: # replace values where appropriate
@@ -253,14 +250,17 @@ def Final_Round():
             word_knowledge[i]=guess
     print(word_knowledge)
     win_money=Guess_Word(round_word)
-    Big_Reward(win_money,current_player)
+    if win_money:
+        Big_Reward(current_player)
+    print(f"The word was {round_word}")
     print("Thanks for playing, goodbye!")
-    print(player_bank)
+    print(f"Final Bank totals: {player_bank}")
 
 
-def Big_Reward(bool1,int1):
-    if bool1:
-        player_bank[player_dictionary[int1]]+=1500
+def Big_Reward(int1):
+    grand_prize=2500
+    print(f"For correctly guessing the final word, you've won ${grand_prize}")
+    player_bank[player_dictionary[int1]]+=grand_prize
 
 
 
