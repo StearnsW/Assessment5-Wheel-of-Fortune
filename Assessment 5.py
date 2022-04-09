@@ -1,3 +1,4 @@
+from http.client import CONFLICT
 import random
 rounds=3
 number_of_players=3
@@ -70,7 +71,6 @@ def Wheel_Round(int1):
             round_word=test_word # set round_word (the word to play) to the picked test_word
             words_played.add(round_word) # add the new word to play to the played words set
     word_knowledge=list("_"*len(round_word)) # what the player knows about the word
-    print(round_word)
     round_over = False
     current_player=int1
     print(player_bank)
@@ -81,56 +81,71 @@ def Wheel_Round(int1):
         while not turn_over:
             print(f"You ({player_dictionary[current_player]}) have ${round_bank[player_dictionary[current_player]]} available")
             print(word_knowledge)
+            print(guessed_letters)
             choice=Turn_Menu()
             if choice == 1:
-                wheel_return=random.choice(wheel_values)
-                print(f"You landed on {wheel_return}.")
-                if wheel_return == 'Lose a Turn':
-                    turn_over=True
-                elif wheel_return == 'Bankrupt':
-                    round_bank[player_dictionary[current_player]]=0
-                    turn_over=True
-                else:
-                    not_repeat=False
-                    while not not_repeat:
-                        guess=Consonant_Guess()
-                        if guess not in guessed_letters:
-                            not_repeat=True
-                        else:
-                            print("That letter has already been guessed, try again")
-                    guessed_letters.add(guess)
-                    good_guess=Guess_Letter(round_word,guess)
-                    if good_guess:
-                        for i in range(len(word_knowledge)): # loop through the blank locations to see which need replacing
-                            if round_word[i]==guess: # replace values where appropriate
-                                word_knowledge[i]=round_word[i]
-                                round_bank[player_dictionary[current_player]]+=wheel_return
-                    else:
+                consonants_remaining=False
+                for i in range(len(round_word)):
+                    if round_word[i] in {'B','C','D','F','G','H','J','K','L','M','N','P','Q','R','S','T','V','W','X','Y','Z'}-guessed_letters:
+                        consonants_remaining=True
+                if consonants_remaining:
+                    wheel_return=random.choice(wheel_values)
+                    print(f"You landed on {wheel_return}.")
+                    if wheel_return == 'Lose a Turn':
                         turn_over=True
+                    elif wheel_return == 'Bankrupt':
+                        round_bank[player_dictionary[current_player]]=0
+                        turn_over=True
+                    else:
+                        not_repeat=False
+                        while not not_repeat:
+                            guess=Consonant_Guess()
+                            if guess not in guessed_letters:
+                                not_repeat=True
+                            else:
+                                print("That letter has already been guessed, try again")
+                        guessed_letters.add(guess)
+                        good_guess=Guess_Letter(round_word,guess)
+                        if good_guess:
+                            for i in range(len(word_knowledge)): # loop through the blank locations to see which need replacing
+                                if round_word[i]==guess: # replace values where appropriate
+                                    word_knowledge[i]=round_word[i]
+                                    round_bank[player_dictionary[current_player]]+=wheel_return
+                        else:
+                            turn_over=True
+                else:
+                    print("There are no unguessed consonants remaining.")
             elif choice == 2:
                 round_over=Guess_Word(round_word)
                 turn_over=True
             else:
-                player_can_buy=Can_Buy_Vowel(current_player)
-                if player_can_buy:
-                    round_bank[player_dictionary[current_player]]-=250
-                    not_repeat=False
-                    while not not_repeat:
-                        guess=Vowel_Guess()
-                        if guess not in guessed_letters:
-                            not_repeat=True
+                vowels_remaining=False
+                for i in range(len(round_word)):
+                    if round_word[i] in {'A','E','I','O','U'}-guessed_letters:
+                        vowels_remaining=True
+                if vowels_remaining:    
+                    player_can_buy=Can_Buy_Vowel(current_player)
+                    if player_can_buy:
+                        round_bank[player_dictionary[current_player]]-=250
+                        not_repeat=False
+                        while not not_repeat:
+                            guess=Vowel_Guess()
+                            if guess not in guessed_letters:
+                                not_repeat=True
+                            else:
+                                print("That letter has already been guessed, try again")
+                        guessed_letters.add(guess)
+                        good_guess=Guess_Letter(round_word,guess)
+                        if good_guess:
+                            for i in range(len(word_knowledge)): # loop through the blank locations to see which need replacing
+                                if round_word[i]==guess: # replace values where appropriate
+                                    word_knowledge[i]=round_word[i]
                         else:
-                            print("That letter has already been guessed, try again")
-                    guessed_letters.add(guess)
-                    good_guess=Guess_Letter(round_word,guess)
-                    if good_guess:
-                        for i in range(len(word_knowledge)): # loop through the blank locations to see which need replacing
-                            if round_word[i]==guess: # replace values where appropriate
-                                word_knowledge[i]=round_word[i]
+                            turn_over=True
                     else:
-                        turn_over=True
+                        print("You do not have the funds to purchase a vowel.")
                 else:
-                    print("You do not have the funds to purchase a vowel.")
+                    print("There are no more vowels to be guessed in the word.")
         current_player=(current_player+1)%number_of_players
     for player in player_bank.keys():
         player_bank[player]+=round_bank[player]
@@ -195,6 +210,7 @@ def Can_Buy_Vowel(int1):
 
 
 def Final_Round():
+    guessed_letters=set()
     current_player=Money_Leader()
     print(f"{player_dictionary[current_player]} has the most money entering the final round.")
     print(f"It is {player_dictionary[current_player]}'s turn.")
@@ -212,11 +228,24 @@ def Final_Round():
             word_knowledge[i]=round_word[i]
     print(word_knowledge)
     for i in range(3):
-        guess=Consonant_Guess()
+        new_information=False
+        while not new_information:
+            guess=Consonant_Guess()
+            if guess not in {'R','S','T','L','N'}.union(guessed_letters):
+                new_information=True
+                guessed_letters.add(guess)
+            else:
+                print("You already have information about that letter, please try again")
         for i in range(len(word_knowledge)): # loop through the blank locations to see which need replacing
             if round_word[i]==guess: # replace values where appropriate
                 word_knowledge[i]=guess
-    guess=Vowel_Guess()
+    new_information=False
+    while not new_information:
+        guess=Vowel_Guess()
+        if guess not in {'E'}:
+            new_information=True
+        else:
+            print("You already have information about that letter, please try again")
     for i in range(len(word_knowledge)): # loop through the blank locations to see which need replacing
         if round_word[i]==guess: # replace values where appropriate
             word_knowledge[i]=guess
