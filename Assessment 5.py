@@ -34,13 +34,13 @@ def Welcome():
 
 ###########################
 def Get_Name(int1):
-    unique_name = False
+    unique_name=False
     while not unique_name:
         player_name=input(f"Please enter a name for player {int1+1} (all names converted to UPPERCASE)\n").upper()
         if player_name in player_dictionary.values():
             print("That name is already in use, please enter a different one")
         else:
-            unique_name = True
+            unique_name=True
     return player_name
 ###########################
 
@@ -67,20 +67,19 @@ def Wheel_Round(int1,int2):
             round_word=test_word # set round_word (the word to play) to the picked test_word
             words_played[int1]=round_word # add the new word to play to the played words set
     word_knowledge=list("_"*len(round_word)) # what the player knows about the word
-    print(words_played)
-    round_over = False
+    round_over=False
     current_player=int2
     print(player_bank)
     guessed_letters=set()
     while not round_over:
         print(f"It is {player_dictionary[current_player]}'s turn")
-        turn_over = False
+        turn_over=False
         while not turn_over:
             print(f"You ({player_dictionary[current_player]}) have ${round_bank[player_dictionary[current_player]]} available")
             print(word_knowledge)
             print(guessed_letters)
             choice=Turn_Menu()
-            if choice == 1:
+            if choice==1:
                 consonants_remaining=False
                 for i in range(len(round_word)):
                     if round_word[i] in {'B','C','D','F','G','H','J','K','L','M','N','P','Q','R','S','T','V','W','X','Y','Z'}-guessed_letters:
@@ -88,9 +87,9 @@ def Wheel_Round(int1,int2):
                 if consonants_remaining:
                     wheel_return=random.choice(wheel_values)
                     print(f"You landed on {wheel_return}.")
-                    if wheel_return == 'Lose a Turn':
+                    if wheel_return=='Lose a Turn':
                         turn_over=True
-                    elif wheel_return == 'Bankrupt':
+                    elif wheel_return=='Bankrupt':
                         round_bank[player_dictionary[current_player]]=0
                         turn_over=True
                     else:
@@ -110,9 +109,15 @@ def Wheel_Round(int1,int2):
                                     round_bank[player_dictionary[current_player]]+=wheel_return
                         else:
                             turn_over=True
+                    consonants_remaining=False
+                    for i in range(len(round_word)):
+                        if round_word[i] in {'B','C','D','F','G','H','J','K','L','M','N','P','Q','R','S','T','V','W','X','Y','Z'}-guessed_letters:
+                            consonants_remaining=True
+                    if not consonants_remaining:
+                        print("That was the final consonant")
                 else:
                     print("There are no unguessed consonants remaining.")
-            elif choice == 2:
+            elif choice==2:
                 round_over=Guess_Word(round_word)
                 turn_over=True
             else:
@@ -141,6 +146,12 @@ def Wheel_Round(int1,int2):
                             turn_over=True
                     else:
                         print("You do not have the funds to purchase a vowel.")
+                    vowels_remaining=False
+                    for i in range(len(round_word)):
+                        if round_word[i] in {'A','E','I','O','U'}-guessed_letters:
+                            vowels_remaining=True
+                    if not vowels_remaining:
+                        print("That was the last vowel")
                 else:
                     print("There are no more vowels to be guessed in the word.")
         current_player=(current_player+1)%number_of_players
@@ -169,7 +180,7 @@ def Consonant_Guess():
         elif guess.upper() in {'A','E','I','O','U'}:
             print("That was not recognized as a consonant, try again")
         else:
-            is_consonant = True
+            is_consonant=True
     return guess.upper()
 
 
@@ -184,17 +195,17 @@ def Guess_Word(str1):
     return correct_guess
         
 def Vowel_Guess():
-    is_vowel = False
+    is_vowel=False
     while not is_vowel:
         guess=input("What vowel would you like to guess?\n")
-        if len(guess) != 1:
+        if len(guess)!=1:
             print("That wasn't one letter, try again")
         elif not guess.isalpha():
             print("That wasn't recognized as a letter, try again")
         elif guess.upper() not in {'A','E','I','O','U'}:
             print("That was not recognized as a vowel, try again")
         else:
-            is_vowel = True
+            is_vowel=True
     return guess.upper()
 
 
@@ -241,7 +252,7 @@ def Final_Round(int1):
     new_information=False
     while not new_information:
         guess=Vowel_Guess()
-        if guess not in {'E'}:
+        if guess!='E':
             new_information=True
         else:
             print("You already have information about that letter, please try again")
@@ -250,12 +261,12 @@ def Final_Round(int1):
             word_knowledge[i]=guess
     print(word_knowledge)
     win_money=Guess_Word(round_word)
+    print(f"The word was {round_word}")
     if win_money:
         Big_Reward(current_player)
-    print(f"The word was {round_word}")
-    print("Thanks for playing, goodbye!")
     print(f"Final Bank totals: {player_bank}")
-
+    print("Thanks for playing, goodbye!")
+    
 
 def Big_Reward(int1):
     grand_prize=2500
@@ -277,15 +288,15 @@ def Money_Leader():
 def Turn_Menu():
     print("Turn Menu")
     print("====================")
-    print("1: Guess a consonant")
+    print("1: Spin the Wheel")
     print("2: Guess the word")
     print("3: Buy a vowel")
-    choice_made = False
+    choice_made=False
     while not choice_made:
         turn_choice=input("What would you like to do?\n")
         if turn_choice in {'1','2','3'}:
-            turn_choice = int(turn_choice)
-            choice_made = True
+            turn_choice=int(turn_choice)
+            choice_made=True
         else:
             print("That is not a recognized option, please try again")
     return turn_choice
