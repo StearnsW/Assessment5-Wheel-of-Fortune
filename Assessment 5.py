@@ -8,7 +8,11 @@ player_bank={}
 round_bank={}
 words_played=set()
 guessed_letters=set()
-word_knowledge= set()
+word_knowledge=set()
+wheel_values=['Lose a Turn','Bankrupt',100,
+200,300,400,500,600,700,800,
+900,450,550,500,350,400,450,
+550,600,650,250,150,750,850]
 
 def Get_Word():
     words_file=open("words_alpha(word list from gitHub).txt") # open list file to read in data
@@ -63,7 +67,7 @@ def Wheel_Round():
             word_checked=True # word is new so no need to recheck, change checked to True
             round_word=test_word # set round_word (the word to play) to the picked test_word
             words_played.add(round_word) # add the new word to play to the played words set
-    word_knowledge= list("_"*len(round_word)) # what the player knows about the word
+    word_knowledge=list("_"*len(round_word)) # what the player knows about the word
     
     round_over = False
     while not round_over:
@@ -73,22 +77,45 @@ def Wheel_Round():
             print(f"You ({player_dictionary[current_player]}) have ${round_bank[player_dictionary[current_player]]} available")
             choice=Turn_Menu()
             if choice == 1:
-                Guess_Consonant(round_word)
+                turn_over=Spin_Wheel(round_word,current_player)
             elif choice == 2:
-                Guess_Word()
+                round_over=Guess_Word(round_word)
+                turn_over=True
             else:
-                Can_Buy_Vowel(current_player)
+                player_can_buy=Can_Buy_Vowel(current_player)
+                if player_can_buy:
+                    round_bank[player_dictionary[current_player]]-=250
+                    turn_over=Buy_Vowel(round_word)
+                else:
+                    print("You do not have the funds to purchase a vowel.")
 
 
-def Guess_Consonant(str1):
+def Spin_Wheel(str1,int1):
+    wheel_return=random.choice(wheel_values)
+    if wheel_return == 'Lose a Turn':
+        turn_continues=False
+    elif wheel_return == 'Bankrupt':
+        round_bank[player_dictionary[int1]]=0
+        turn_continues=False
+    else:
+        Guess_Consonant(str1,int1,wheel_return)
+        turn_continues=True
+    return turn_continues
+
+
+def Guess_Consonant(str1,int1,int2):
     letter_guess=Consonant_Guess()
     guessed_letters.add(letter_guess)
     if str1.find(letter_guess)==-1: # check if letter not in word and not repeat guess
         print("That letter is not in the word")
+        correct_guess=False
     else: 
         for i in range(len(word_knowledge)): # loop through the blank locations to see which need replacing
             if str1[i]==letter_guess: # replace values where appropriate
                 word_knowledge[i]=letter_guess
+                round_bank[player_dictionary[int1]]+=int2
+        correct_guess=True
+    return correct_guess
 
 
 def Consonant_Guess():
@@ -108,16 +135,56 @@ def Consonant_Guess():
     return guess.upper()
 
 
-def Guess_Word():
-    print("You are guessing the word")
+def Guess_Word(str1):
+    user_guess=input("What word would you like to guess?\n")
+    if user_guess!=str1: # check if word is incorrect and not a repeat
+        print("That is incorrect.")
+        correct_guess=False
+    else: # check if word not repeat
+        print("You correctly guessed the word!  Congratulations, you won!")
+        correct_guess=True
+    return correct_guess
+        
+def Vowel_Guess():
+    is_vowel = False
+    while not is_vowel:
+        guess=input("What vowel would you like to guess?\n")
+        if len(guess) != 1:
+            print("That wasn't one letter, try again")
+        elif not guess.isalpha():
+            print("That wasn't recognized as a letter, try again")
+        elif guess.upper() not in {'A','E','I','O','U'}:
+            print("That was not recognized as a vowel, try again")
+        elif guess in guessed_letters:
+            print("That letter has already been guessed, try again")
+        else:
+            is_vowel = True
+    return guess.upper()
+
+def Buy_Vowel(str1):
+    letter_guess=Vowel_Guess()
+    guessed_letters.add(letter_guess)
+    if str1.find(letter_guess)==-1: # check if letter not in word and not repeat guess
+        print("That letter is not in the word")
+        correct_guess=False
+    else: 
+        for i in range(len(word_knowledge)): # loop through the blank locations to see which need replacing
+            if str1[i]==letter_guess: # replace values where appropriate
+                word_knowledge[i]=letter_guess
+        correct_guess=True
+    return correct_guess
+
 
 def Can_Buy_Vowel(int1):
-    print("This will cost you $250")
+    if round_bank[player_dictionary[int1]]>=250:
+        sufficient_funds=True
+    else:
+        sufficient_funds=False
+    return sufficient_funds
 
 
 def Final_Round():
     max_money=0
-    most_money="hahahaha"
     for player in player_bank.keys():
         if player_bank[player]>max_money:
             most_money=player
@@ -145,6 +212,3 @@ def Turn_Menu():
 
 
 Welcome()
-Final_Round()
-print(player_dictionary)
-print(player_bank)
