@@ -200,42 +200,42 @@ def Guess_Word(str1):
     return correct_guess # return truth of guess==round_word
 ###########################
 
-########################### function to guess vowel
+########################### function to guess vowel, returns guessed vowel
 def Vowel_Guess():
     is_vowel=False
-    while not is_vowel:
+    while not is_vowel: # loop to make sure guess is a vowel
         guess=input("What vowel would you like to buy?\n")
-        if len(guess)!=1:
+        if len(guess)!=1: # make sure input is one letter
             print("That wasn't one letter, try again")
-        elif not guess.isalpha():
+        elif not guess.isalpha(): # make sure guess is a letter
             print("That wasn't recognized as a letter, try again")
-        elif guess.upper() not in {'A','E','I','O','U'}:
+        elif guess.upper() not in {'A','E','I','O','U'}: # make sure guess is not not a vowel
             print("That was not recognized as a vowel, try again")
-        else:
+        else: # input is a vowel
             is_vowel=True
-    return guess.upper()
+    return guess.upper() # return guessed vowel
 ###########################
 
-###########################
+########################### function to see if player has funds to buy a vowel, takes playerID as input, returns if funds sufficient
 def Can_Buy_Vowel(int1):
-    if round_bank[player_dictionary[int1]]>=250:
+    if round_bank[player_dictionary[int1]]>=250: # if round bank is above vowel cost ($250)
         sufficient_funds=True
     else:
         sufficient_funds=False
     return sufficient_funds
 ###########################
 
-###########################
+########################### function to play final round, takes round number as input
 def Final_Round(int1):
-    guessed_letters=set()
-    current_player=Money_Leader()
-    if current_player==-1:
+    guessed_letters=set() # set of already guessed letters
+    current_player=Money_Leader() # find out which player has the most money
+    if current_player==-1: # deals with case where nobody has any money entering final round
         print('Since nobody has any money, the first player shall get to play the final round')
-        current_player=0
-    else:
+        current_player=0 # lets first player play final round
+    else: # lets players know who will play the final round
         print(f"{player_dictionary[current_player]} has the most money entering the final round.")
     print(f"It is {player_dictionary[current_player]}'s turn.")
-    input("You will be given one guess at the word after learning some information, hit enter to continue:")
+    input("You will be given one guess at the word after learning some information, hit enter to continue:") # breif overview of instructions
     word_checked=False # has the word chosen been checked, begins False as no word chosen for the game yet so can't have been checked
     while not word_checked: # loop to check if is new word or not
         test_word=Get_Word() # get a word
@@ -247,12 +247,12 @@ def Final_Round(int1):
     for i in range(len(word_knowledge)): # loop through the blank locations to see which need replacing
         if round_word[i] in {'R','S','T','L','N','E'}: # replace values where appropriate
             word_knowledge[i]=round_word[i]
-    print(word_knowledge)
-    print("The letters R,S,T,L,N,E have already been filled in.")
-    print("Please guess 3 more consonants and one additional vowel.")
-    for i in range(3):
+    print(word_knowledge) # prints what is already known
+    print("The letters R,S,T,L,N,E have already been filled in.") # lets the player understand why some letters are filled in
+    print("Please guess 3 more consonants and one additional vowel.") # Explain what the player will be prompted for
+    for i in range(3): # loop to get consonants 
         new_information=False
-        while not new_information:
+        while not new_information: # loop to ensure the player is guessing new things
             guess=Consonant_Guess()
             if guess not in {'R','S','T','L','N'}.union(guessed_letters):
                 new_information=True
@@ -263,7 +263,7 @@ def Final_Round(int1):
             if round_word[i]==guess: # replace values where appropriate
                 word_knowledge[i]=guess
     new_information=False
-    while not new_information:
+    while not new_information: # loop to ensure the vowel guess is new information
         guess=Vowel_Guess()
         if guess!='E':
             new_information=True
@@ -272,36 +272,36 @@ def Final_Round(int1):
     for i in range(len(word_knowledge)): # loop through the blank locations to see which need replacing
         if round_word[i]==guess: # replace values where appropriate
             word_knowledge[i]=guess
-    print(word_knowledge)
-    win_money=Guess_Word(round_word)
-    print(f"The word was {round_word}")
-    if win_money:
+    print(word_knowledge) # let the player know the new information
+    win_money=Guess_Word(round_word) # have the player guess the final word
+    print(f"The word was {round_word}") # let the player know what the word was
+    if win_money: # if player guessed correctly, runs Big_Reward function
         Big_Reward(current_player)
-    print(f"Final Bank totals: {player_bank}")
-    print("Thanks for playing, goodbye!")
+    print(f"Final Bank totals: {player_bank}") # outputs final bank amounts
+    print("Thanks for playing, goodbye!") # ends the game
 ###########################
 
-###########################
+########################### function to add big reward to player's bank, takes playerID who played Final_Round
 def Big_Reward(int1):
-    grand_prize=2500
-    print(f"For correctly guessing the final word, you've won ${grand_prize}")
-    player_bank[player_dictionary[int1]]+=grand_prize
+    grand_prize=2500 # walue of grand prize
+    print(f"For correctly guessing the final word, you've won ${grand_prize}") # tells player what they've won
+    player_bank[player_dictionary[int1]]+=grand_prize # adds grand prize to player's bank
 ###########################
 
-###########################
+########################### function to find out who which player has most money, returns first player with most money
 def Money_Leader():
-    max_money=1
-    most_money=-1
-    for player_id in player_dictionary.keys():
-        if player_bank[player_dictionary[player_id]]>max_money:
-            most_money=player_id
-            max_money=player_bank[player_dictionary[player_id]]
-        elif player_bank[player_dictionary[player_id]]==max_money:
-            print(f"{player_dictionary[player_id]} is tied for the money lead, sadly they don't get to go on.")
-    return most_money  
+    max_money=1 # starting value to compare player's bank values against
+    most_money=-1 # default playerID in case nobody has any money
+    for player_id in player_dictionary.keys(): # loop to check players bank value against current leader
+        if player_bank[player_dictionary[player_id]]>max_money: # player's bank value is above current max_money
+            most_money=player_id # reset player_id to current player's as they are now leader
+            max_money=player_bank[player_dictionary[player_id]] # reset max_money value
+        elif player_bank[player_dictionary[player_id]]==max_money: # if player has the same value as previous money leader
+            print(f"{player_dictionary[player_id]} is tied for the money lead, sadly they don't get to go on.") # apology message
+    return most_money  # return playerID of player with most money
 ###########################       
 
-###########################
+########################### function to display the options a player has on their turn, returns the option chosen
 def Turn_Menu():
     print("Turn Menu")
     print("====================")
@@ -309,14 +309,14 @@ def Turn_Menu():
     print("2: Guess the word")
     print("3: Buy a vowel")
     choice_made=False
-    while not choice_made:
+    while not choice_made: # loop to make sure the player entered a valid menu option
         turn_choice=input("What would you like to do?\n")
         if turn_choice in {'1','2','3'}:
             turn_choice=int(turn_choice)
             choice_made=True
         else:
             print("That is not a recognized option, please try again")
-    return turn_choice
+    return turn_choice # returns menu choice
 ###########################
 
 
