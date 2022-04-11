@@ -78,7 +78,7 @@ def Wheel_Round(int1,int2):
         turn_over=False
         while not turn_over: # loop to play player's turn
             print(f"You ({player_dictionary[current_player]}) have ${round_bank[player_dictionary[current_player]]} available") # how much $ does the player have for this round
-            print(f"The word:\n{word_knowledge}") # let the player what's already been guessed
+            print(f"The board:\n{word_knowledge}") # let the player what's already been guessed
             print(f"Guessed Letters:{guessed_letters}") # let the player
             choice=Turn_Menu() # display the choice menu and take the return to play the game
             if choice==1: # if the player chooses to spin the wheel
