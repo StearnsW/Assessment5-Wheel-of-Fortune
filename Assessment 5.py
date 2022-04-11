@@ -8,8 +8,8 @@ round_bank={} # blank dictionary to keep track of player money each round before
 words_played={} # blank dictionary to keep track of which words have been played which round
 wheel_values=['Lose a Turn','Bankrupt',100,
 200,300,400,500,600,700,800,
-900,450,550,500,350,400,450,
-550,600,650,250,150,750,850] # list of values to simulate wheel
+900,150,250,350,450,550,650,
+750,850,400,450,500,550,600] # list of values to simulate wheel
 
 ########################### function to get a word from the list for the round
 def Get_Word():
